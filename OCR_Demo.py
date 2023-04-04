@@ -17,7 +17,7 @@ show(og_img)
  # In[alignment DEL]
  # X
 
-# ---- TO DELTE 
+# ---- TO DELTE
 # rotate img to near true vertical
 img_center = tuple(np.array(og_img.shape[1::-1]) / 2)
 rot_mat = cv.getRotationMatrix2D(img_center, .8, 1.0)
@@ -42,7 +42,7 @@ show(og_img)
 
  # In[ whole img threshold/outline to DF ]
  # REF https://docs.opencv.org/3.4/db/df6/tutorial_erosion_dilatation.html
- 
+
 # eroding @ window_size 11 actually dilates all highlighted parts of the img from the yellow mask above
 # removes all small imperfections, making it an alternative to blur with an emphasis on yellow
 window_size =11
@@ -85,7 +85,7 @@ for idx, row in df.iterrows():
     x, y, w, h = [row['x'], row['y'], row['w'], row['h']]
 
     cv.rectangle(canvas, (x, y), (x+w, y+h), color=(255, 255, 200), thickness=15)
-    
+
     text = return_chars(og_img, x,y,w,h)
     texts.append(text)
 
@@ -107,7 +107,7 @@ img_ = add_padding(mask, padding=50, r=255, g=255, b=255)
 gray = cv.cvtColor(img_, cv.COLOR_BGR2GRAY)
 
 # In[ find all chars ]
-# Finds all shapes, in our case chars 
+# Finds all shapes, in our case chars
 
 
 (og_h, og_w) = gray.shape[:2]
@@ -188,9 +188,9 @@ df = df.loc[df['bool'] != 1,:]
 df.drop(columns=['bool'], inplace=True)
 df.reset_index(drop=True, inplace=True)
 
-# !!!! 
+# !!!!
 # since there are 3 rows, we should only have to go through the df 3 times
-# !!!! 
+# !!!!
 
 # 1st group
 y = df.loc[0,'y']
@@ -230,7 +230,7 @@ new_xs = []
 
 for idx, row in df.iterrows():
     # the following only uses 1st row X as a starting point and disregards all other starting points
-    
+
     # use the same h & y for all blocks
     new_y = df['y'].min()
 
@@ -239,7 +239,7 @@ for idx, row in df.iterrows():
         c_x, c_y, c_w, c_h = [row['x'], row['y'], row['w'], row['h']]
         new_x = c_x.copy()
         new_xs.append(new_x)
-        
+
     else:
         # we create our our new X based on last row's ending X + W + 20 (padding)
         # to get current row's starting point
@@ -247,25 +247,29 @@ for idx, row in df.iterrows():
         # current row calculated starting point
         new_x = last_char_end.copy()
         new_xs.append(new_x)
-        
+
         # curernt char x, y, w, h
         c_x, c_y, c_w, c_h = [row['x'], row['y'], row['w'], row['h']]
-        
+
     char = gray[c_y:c_y + c_h, c_x:c_x + c_w]
     char = add_padding(char,padding=15)
-    # -next 3 lines 4 debugging 
+    # -next 3 lines 4 debugging
     # chars.append(char)
     # show(char)
     # plt.show()
-    
+
     char = cv.cvtColor(char, cv.COLOR_BGR2GRAY)
     canvas[new_y:new_y + c_h + 15 , new_x:new_x + c_w + 15] = char.copy()
-        
-show(canvas)   
+
+show(canvas)
+
+# In[]
+
+tesseract_str = img_2_str(canvas, config_int=7, special='-c tessedit_char_blacklist=abcdefghijklmnopqrstuvwxyz()»©"\""/"O')
+# tesseract sees unnecessary trailing white space
+tesseract_str = tesseract_str.replace(' ','')
+tesseract_str
 
 # In[]
 
 cv.imwrite('label1.jpg', canvas)
-
-
-
