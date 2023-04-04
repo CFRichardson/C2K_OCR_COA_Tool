@@ -7,7 +7,7 @@ Created on Wed Mar  8 11:32:10 2023
 
 """
 # In[Img Load]
-image_path = '/Users/christopherrichardson/Library/CloudStorage/GoogleDrive-christopherr@sandiego.edu/My Drive/_Projekt_Skan/COA_imgs/demo.jpg
+image_path = '/Users/christopherrichardson/Library/CloudStorage/GoogleDrive-christopherr@sandiego.edu/My Drive/_Projekt_Skan/COA_imgs/demo.jpg'
 
 # load and convert to grayscale (2nd param == 0)
 og_img = cv.imread(image_path)
@@ -86,8 +86,11 @@ for idx, row in df.iterrows():
 
     cv.rectangle(canvas, (x, y), (x+w, y+h), color=(255, 255, 200), thickness=15)
 
-    text = return_chars(og_img, x,y,w,h)
-    texts.append(text)
+    scope = img_scope(og_img, x,y,w,h)
+    text_mask = return_mask(scope)
+    show(text_mask)
+
+    texts.append(text_mask)
 
  # In[]
 
