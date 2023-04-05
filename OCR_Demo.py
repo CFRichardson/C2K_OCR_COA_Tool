@@ -14,6 +14,7 @@ og_img = cv.imread(image_path)
 og_img = cv.medianBlur(og_img,5)
 show(og_img)
 
+
  # In[alignment DEL]
  # X
 
@@ -48,6 +49,7 @@ show(og_img)
 window_size =11
 kernel = np.ones((window_size,window_size))
 mask = cv.erode(mask,kernel,iterations = 2)
+
 
 # In[ find outline of label ]
 
@@ -99,7 +101,7 @@ show(canvas)
 
 show(texts[0])
 
- # In[]
+# In[ equal 1 ]
 mask = texts[0]
 
 # convert mask to 3 channel
@@ -109,9 +111,9 @@ img_ = add_padding(mask, padding=50, r=255, g=255, b=255)
 # convert back to single channel
 gray = cv.cvtColor(img_, cv.COLOR_BGR2GRAY)
 
+show(gray)
 # In[ find all chars ]
 # Finds all shapes, in our case chars
-
 
 (og_h, og_w) = gray.shape[:2]
 image_size = og_h * og_w
@@ -155,41 +157,7 @@ df = df.loc[df['bool'] != 1,:]
 df.drop(columns=['bool'], inplace=True)
 df.reset_index(drop=True, inplace=True)
 
- # In[ allign all text via Y value ]
- # alligning text via Y value allows us to sort the 1st char to the last,
- # where the program starts at the highest Y, then sorts left to right (X),
- # thus each row is alligned
-
-
-df = pd.DataFrame(rects, columns=['x','y','w','h'])
-# remove all small imperfections and small boxes from characters like B,8, P, Q, O, etc
-df = df.loc[(df['w'] > 15) & (df['h'] > 25),].reset_index(drop=True)
-
-idxs_2_delete = []
-for c_idx, c_row in df.iterrows():
-    '''
-        The following checks every row vs all other rows (boxes) to see if the starting point
-        is within another bounding box (row).
-    '''
-    cx, cy, cw, ch = [c_row['x'], c_row['y'], c_row['w'], c_row['h']]
-
-    sum_ = 0
-    for idx, row in df.iterrows():
-        x, y, w, h = [row['x'], row['y'], row['w'], row['h']]
-
-        if idx != c_idx:
-            # ** check if current box is indeed within another box
-            if x < cx < x+w and y < cy < y+h:
-                sum_ += 1
-
-    idxs_2_delete.append(sum_)
-
-df['bool'] = idxs_2_delete
-
-# drop boxes that are marked 1
-df = df.loc[df['bool'] != 1,:]
-df.drop(columns=['bool'], inplace=True)
-df.reset_index(drop=True, inplace=True)
+ # In[ Sort & Order Chars ]
 
 # !!!!
 # since there are 3 rows, we should only have to go through the df 3 times
@@ -199,8 +167,8 @@ df.reset_index(drop=True, inplace=True)
 y = df.loc[0,'y']
 
 df1 = df.loc[(df['y'] > y-20) & (df['y'] < y+20), :]
+# remove all rows associated with df1
 df = df.drop(df1.index).reset_index(drop=True)
-
 df1['y'] = round(df1['y'].mean())
 
 
