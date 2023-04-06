@@ -112,7 +112,7 @@ def img_scope(whole_img, x,y,w,h, x_adjust=0, y_adjust=0, bs=(350,120), be=(480,
         whole_img : whole_scan
 
 
-
+        # draw sqaure over unwanted chars
         bs == block_start: starting point (y,x)
         be == block_end: end point (y,x)
 
@@ -132,7 +132,6 @@ def img_scope(whole_img, x,y,w,h, x_adjust=0, y_adjust=0, bs=(350,120), be=(480,
     scope = cv.rectangle(scope, bs,be, (0,0,0), -1)
 
     return scope
-
 
 
 
